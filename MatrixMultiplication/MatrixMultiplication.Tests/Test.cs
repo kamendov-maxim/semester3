@@ -48,7 +48,7 @@ public class MatrixMultiplicationTests
             Assert.That(File.ReadAllBytes("output").SequenceEqual(File.ReadAllBytes(dir + "/Answer")));
             answer = MatrixMultiplication.MatrixMultiplier.Multiply(firstMatrix, secondMatrix);
             answer.WriteToFile("output");
-            Assert.That(File.ReadAllBytes("output").SequenceEqual(File.ReadAllBytes(files[2])));
+            Assert.That(File.ReadAllBytes("output").SequenceEqual(File.ReadAllBytes(dir + "/Answer")));
 
         }
     }
