@@ -41,11 +41,11 @@ public class MatrixMultiplicationTests
         foreach (var dir in multiplicationTestDirs)
         {
             var files = Directory.GetFiles(dir);
-            var firstMatrix = new MatrixMultiplication.Matrix(files[0]);
-            var secondMatrix = new MatrixMultiplication.Matrix(files[1]);
+            var firstMatrix = new MatrixMultiplication.Matrix(dir + "/firstMatrix");
+            var secondMatrix = new MatrixMultiplication.Matrix(dir + "/secondMatrix");
             var answer = MatrixMultiplication.MatrixMultiplier.MultiplyWithoutMultiThreading(firstMatrix, secondMatrix);
             answer.WriteToFile("output");
-            Assert.That(File.ReadAllBytes("output").SequenceEqual(File.ReadAllBytes(files[2])));
+            Assert.That(File.ReadAllBytes("output").SequenceEqual(File.ReadAllBytes(dir + "/Answer")));
             answer = MatrixMultiplication.MatrixMultiplier.Multiply(firstMatrix, secondMatrix);
             answer.WriteToFile("output");
             Assert.That(File.ReadAllBytes("output").SequenceEqual(File.ReadAllBytes(files[2])));
