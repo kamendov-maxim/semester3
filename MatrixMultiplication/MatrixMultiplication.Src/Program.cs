@@ -6,12 +6,6 @@ internal class Program
 
     private static void Main(string[] args)
     {
-
-#if DEBUG
-        Console.WriteLine("DEBUG");
-        args = ["/Users/maks/repos/semester3/MatrixMultiplication/MatrixMultiplication.Src/a1", "/Users/maks/repos/semester3/MatrixMultiplication/MatrixMultiplication.Src/b1", "/Users/maks/repos/semester3/MatrixMultiplication/MatrixMultiplication.Src/output"];
-#endif
-
         if (args.Length > 0)
         {
             bool multithreadingOff = false;
