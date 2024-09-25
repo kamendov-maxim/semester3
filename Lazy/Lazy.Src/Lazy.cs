@@ -34,6 +34,10 @@ public class MultiThreadLazy<T>(Func<T> supplier) : ILazy<T>
         }
         lock (_lock)
         {
+            if (!_firstTime)
+            {
+                return _value[0];
+            }
             _value[0] = Supplier();
             _firstTime = false;
             return _value[0];
