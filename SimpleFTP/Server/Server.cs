@@ -3,6 +3,11 @@ using System.Net.Sockets;
 
 namespace SimpleFTP;
 
+/// <summary>
+/// An implementation of SimpleFTP server
+/// </summary>
+/// <param name="addr">Address for server to listen on</param>
+/// <param name="port">Port for server to listen on</param>
 public class Server(string addr = "0.0.0.0", short port = 21)
 {
     private readonly TcpListener _listener = new(
@@ -11,6 +16,9 @@ public class Server(string addr = "0.0.0.0", short port = 21)
     private readonly List<TcpClient> _clients = [];
     private readonly CancellationTokenSource _cts = new();
 
+    /// <summary>
+    /// Start the server
+    /// </summary>
     public async Task Start()
     {
         Console.WriteLine("Start server");
@@ -26,6 +34,9 @@ public class Server(string addr = "0.0.0.0", short port = 21)
         }
     }
 
+    /// <summary>
+    /// Stop the server
+    /// </summary>
     public void Stop()
     {
         _cts.Cancel();

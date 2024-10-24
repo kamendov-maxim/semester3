@@ -3,6 +3,11 @@ using System.Net.Sockets;
 
 namespace SimpleFTP;
 
+/// <summary>
+/// An implementation of SimpleFTP client
+/// </summary>
+/// <param name="addr">Destination address</param>
+/// <param name="port">Destination port</param>
 public class Client(string addr = "127.0.0.1", short port = 21)
 {
     public IPAddress Destination { get; } = IPAddress.Parse(addr);
@@ -17,12 +22,18 @@ public class Client(string addr = "127.0.0.1", short port = 21)
         "    directory with same name it has on the server)\n" +
         "quit - to quit\n";
 
+    /// <summary>
+    /// Start the client
+    /// </summary>
     public async Task Start()
     {
         await _client.ConnectAsync(Destination, Port, _cts.Token);
         await Run();
     }
 
+    /// <summary>
+    /// Stop the client
+    /// </summary
     public void Stop()
     {
         if (!_cts.IsCancellationRequested)

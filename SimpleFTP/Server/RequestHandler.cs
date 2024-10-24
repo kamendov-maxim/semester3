@@ -4,8 +4,6 @@ namespace SimpleFTP;
 
 internal class RequestHandler
 {
-    // private const string IncorrectRequestRepply = "Incorrect request format\n";
-
     public async static Task Handle(Stream stream, string? request)
     {
         if (request == null)
