@@ -14,27 +14,22 @@ if (args.Length != 1)
     return 0;
 }
 
-bool asyncModeEnabled = false;
 
 
 try
 {
     var stopwatch = new Stopwatch();
-    var hash =
-        asyncModeEnabled ?
-        await CheckSumCalculator.CalculateAsync(args[1]) :
-        CheckSumCalculator.Calculate(args[0]);
 
     stopwatch.Start();
-    hash = CheckSumCalculator.Calculate(args[0]);
+    var hash = CheckSumCalculator.Calculate(args[0]);
     stopwatch.Stop();
-    Console.WriteLine($"Single-threaded\nResult: {string.Join(string.Empty, hash)}\n" +
+    Console.WriteLine($"Single-threaded\nResult: {System.Text.Encoding.Default.GetString(hash)}\n" +
             $"Time: {stopwatch.ElapsedMilliseconds} ms");
     stopwatch.Reset();
     stopwatch.Start();
     hash = await CheckSumCalculator.CalculateAsync(args[0]);
     stopwatch.Stop();
-    Console.WriteLine($"Async\nResult: {string.Join(string.Empty, hash)}\n" +
+    Console.WriteLine($"Async\nResult: {System.Text.Encoding.Default.GetString(hash)}\n" +
             $"Time: {stopwatch.ElapsedMilliseconds} ms");
 }
 catch (DirectoryNotFoundException)
