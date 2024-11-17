@@ -1,9 +1,5 @@
 ﻿using MyNUnit;
 
-#if DEBUG
-args = ["/Users/maks/repos/semester3/MyNUnit/dlls/"];
-#endif
-
 if (args.Length != 1)
 {
     if (args.Length > 0 && (args[0] != "-h" || args[0] != "--help"))
@@ -24,9 +20,14 @@ catch (ArgumentException ex)
     return 0;
 }
 
+foreach (var item in results.Where(r => r.GetType() == typeof(FailedTestResult)))
+{
+    Console.WriteLine($"item {item.Name}");
+}
+
 var failed = 0;
 var finishedWithException = 0;
-await Task.WhenAll();
+var ignored = 0;
 foreach (var result in results)
 {
     switch (result)
@@ -35,6 +36,7 @@ foreach (var result in results)
             {
                 Console.WriteLine($"\x1b[97mTest {ignoredTestResult.Name} was ignored");
                 Console.WriteLine($"Message: {ignoredTestResult.Reason}");
+                ++ignored;
                 break;
             }
         case SuccessfulTestResult:
@@ -65,9 +67,9 @@ foreach (var result in results)
             }
 
     }
-                Console.Write("\x1b[39m");
+    Console.Write("\x1b[39m");
 }
 
 Console.WriteLine($"\x1b[1m{results.Count()} tests completed, {failed} failed, " +
-        $"{results.Count() - failed - finishedWithException} passed, {finishedWithException} finished with exception\x1b[22m");
+        $"{results.Count() - failed - finishedWithException - ignored} passed, {finishedWithException} finished with exception, {ignored} ignored\x1b[22m");
 return 0;

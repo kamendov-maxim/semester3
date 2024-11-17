@@ -63,6 +63,8 @@ public class ClassTester
                 if (ignoreMessage != null)
                 {
                     testResult = new IgnoredTestResult(method.Name, ignoreMessage);
+                    _resultsList.Add(testResult);
+                    continue;
                 }
 
                 RunTestsInArray(BeforeTestMethods);
@@ -102,26 +104,40 @@ public class ClassTester
                         RunTestsInArrayParallel(BeforeTestMethods);
 
                         TestResult? testResult = null;
+
                         ArgumentNullException.ThrowIfNull(method);
-                        st.Start();
-                        try
+
+                        TestAttribute attr = (TestAttribute)method.GetCustomAttributes(typeof(TestAttribute), true)[0];
+                        string? ignoreMessage = attr.IgnoreMessage;
+                        if (ignoreMessage != null)
                         {
-                            var ret = method.Invoke(_instance, null);
+                            testResult = new IgnoredTestResult(method.Name, ignoreMessage);
+                            _resultsList.Add(testResult);
                         }
-                        catch (TargetInvocationException ex)
+                        else
                         {
-                            st.Stop();
-                            if (ex.InnerException == null)
+
+                            st.Start();
+                            try
                             {
-                                throw new ArgumentNullException();
+                                var ret = method.Invoke(_instance, null);
                             }
-                            testResult = ex.InnerException.GetType() == typeof(FailedAssertException)
-                                ? new FailedTestResult(method.Name, st.ElapsedMilliseconds, ex.InnerException.Message)
-                                : new FinishedWithExceptionResult(method.Name, ex.InnerException, st.ElapsedMilliseconds);
+                            catch (TargetInvocationException ex)
+                            {
+                                st.Stop();
+                                if (ex.InnerException == null)
+                                {
+                                    throw new ArgumentNullException();
+                                }
+                                testResult = ex.InnerException.GetType() == typeof(FailedAssertException)
+                                    ? new FailedTestResult(method.Name, st.ElapsedMilliseconds, ex.InnerException.Message)
+                                    : new FinishedWithExceptionResult(method.Name, ex.InnerException, st.ElapsedMilliseconds);
+                            }
+                            if (testResult == null) { testResult = new SuccessfulTestResult(method.Name, st.ElapsedMilliseconds); }
+                            _resultsList.Add(testResult);
+                            RunTestsInArrayParallel(AfterTestMethods);
                         }
-                        if (testResult == null) { testResult = new SuccessfulTestResult(method.Name, st.ElapsedMilliseconds); }
-                        _resultsList.Add(testResult);
-                        RunTestsInArrayParallel(AfterTestMethods);
+
                     })).ContinueWith(t => RunTestsInArrayParallel(AfterClassMethods));
     }
 

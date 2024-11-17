@@ -1,12 +1,5 @@
 namespace MyNUnit;
 
-public enum Result
-{
-    OK,
-    Fail,
-    Exception
-}
-
 public abstract record TestResult(string Name);
 
 public sealed record IgnoredTestResult(string Name, string Reason) : TestResult(Name);
