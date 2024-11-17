@@ -7,17 +7,50 @@ using MyNUnit.Attributes;
 
 namespace MyNUnit;
 
+/// <summary>
+/// Class with methods to perform MyNUnit tests from some class 
+/// </summary>
 public class ClassTester
 {
+    /// <summary>
+    /// Type of class to test
+    /// </summary>
     public Type ClassToTest;
     private readonly ConcurrentBag<TestResult> _resultsList;
+
+    /// <summary>
+    /// Methods called before any tests from the class
+    /// </summary>
     public IEnumerable<MethodInfo?> BeforeClassMethods;
+
+    /// <summary>
+    /// Methods called after all tests from the class
+    /// </summary>
     public IEnumerable<MethodInfo?> AfterClassMethods;
+
+    /// <summary>
+    /// Methods called before performing any test
+    /// </summary>
     public IEnumerable<MethodInfo?> BeforeTestMethods;
+
+    /// <summary>
+    /// Methods called after performing any test
+    /// </summary>
     public IEnumerable<MethodInfo?> AfterTestMethods;
+
+    /// <summary>
+    /// Tests from class
+    /// </summary>
     public IEnumerable<MethodInfo?> TestMethods;
     private readonly object? _instance;
 
+    /// <summary>
+    /// Constructor of class
+    /// </summary>
+    /// <param name="classToTest">Type of class to test</param>
+    /// <param name="resultsList">List where to store results
+    /// ConcurrentBag is used in case if tests will be performed in parallel</param>
+    /// <returns></returns>
     public ClassTester(Type? classToTest, ConcurrentBag<TestResult> resultsList)
     {
         ArgumentNullException.ThrowIfNull(classToTest, "Test class type is null");
@@ -40,6 +73,10 @@ public class ClassTester
         _instance = Activator.CreateInstance(classToTest);
     }
 
+    /// <summary>
+    /// Run tests
+    /// </summary>
+    /// <returns>Task in which tests are running</returns>
     public Task Run()
     {
         return ClassToTest.IsDefined(typeof(ParallelTesting)) ? RunParallel() : RunSequential();
