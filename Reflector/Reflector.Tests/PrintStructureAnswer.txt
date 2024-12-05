@@ -1,0 +1,23 @@
+public class TestClass
+{
+    public System.String RetString(System.String str)
+    {
+    }
+
+    public System.Int32 RetInt()
+    {
+    }
+
+    private System.Boolean PrivateMethod(System.Int32 a, System.String b, System.Boolean c)
+    {
+    }
+
+    public static System.Void StaticMethod(System.Int32 a, System.Int32 b)
+    {
+    }
+
+    public static T GenericMethod<T>(T arg)
+    {
+    }
+
+}
