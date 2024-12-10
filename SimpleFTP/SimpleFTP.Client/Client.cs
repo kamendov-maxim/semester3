@@ -1,7 +1,30 @@
+/*
+MIT License
+
+Copyright (c) 2024 Maxim Kamendov
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+namespace SimpleFTP.Client;
+
 using System.Net;
 using System.Net.Sockets;
-
-namespace SimpleFTP;
 
 /// <summary>
 /// An implementation of SimpleFTP client
@@ -14,13 +37,13 @@ public class Client(string addr = "127.0.0.1", short port = 21)
     public short Port { get; } = port;
     private readonly TcpClient _client = new();
     private readonly CancellationTokenSource _cts = new();
-    private readonly string _helpmessage = "This is a SimpleFTP client" +
-        "Type on of the following commands:\n" +
-        "list <path-to-dir> - list files in the directory\n" +
-        "get <path-to-file> <where-to-save> - to download file from the server\n" +
-        "    (if destination address is empty, then file will be saved to the current\n" +
-        "    directory with same name it has on the server)\n" +
-        "quit - to quit\n";
+    private readonly string _helpmessage = $"This is a SimpleFTP client{Environment.NewLine}" +
+        $"Type on of the following commands:{Environment.NewLine}" +
+        $"list <path-to-dir> - list files in the directory{Environment.NewLine}" +
+        $"get <path-to-file> <where-to-save> - to download file from the server{Environment.NewLine}" +
+        $"    (if destination address is empty, then file will be saved to the current{Environment.NewLine}" +
+        $"    directory with same name it has on the server){Environment.NewLine}" +
+        $"quit - to quit{Environment.NewLine}";
 
     /// <summary>
     /// Start the client
@@ -54,11 +77,7 @@ public class Client(string addr = "127.0.0.1", short port = 21)
         while (!_cts.IsCancellationRequested)
         {
             Console.Write(_helpmessage);
-            var request = Console.ReadLine();
-            if (request == null)
-            {
-                throw new NullReferenceException("Error when reading a command");
-            }
+            var request = Console.ReadLine() ?? throw new NullReferenceException("Error when reading a command");
             var requestSplitted = request.Split();
             if (!
                ((requestSplitted.Length == 2 && requestSplitted[0] == "list")
