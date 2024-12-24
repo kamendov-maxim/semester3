@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MyThreadPool</name>
+    </assembly>
+    <members>
+        <member name="T:MyThreadPool.IMyTask`1">
+            <summary>
+            Interface that task should implement to be executed in MyThreadPool
+            </summary>
+            <typeparam name="TResult">Type of the value that should be returned</typeparam>
+        </member>
+        <member name="P:MyThreadPool.IMyTask`1.IsCompleted">
+            <summary>
+            Becomes true when task is completed.
+            </summary>
+        </member>
+        <member name="P:MyThreadPool.IMyTask`1.Result">
+            <summary>
+            After task completed result value is stored there. 
+            If task is not completed, trying to get the value will cause block of the thread until value is calculated.
+            </summary>
+        </member>
+        <member name="M:MyThreadPool.IMyTask`1.ContinueWith``1(System.Func{`0,``0})">
+            <summary>
+            Add a task to execute after this task and use it's value.
+            </summary>
+            <param name="func">Function that needs to be executed</param>
+            <typeparam name="TNewResult">Type of the return value of new task</typeparam>
+            <returns>New task</returns>
+        </member>
+        <member name="T:MyThreadPool.MyThreadPool">
+            <summary>
+            ThreadPool implementation
+            </summary>
+        </member>
+        <member name="M:MyThreadPool.MyThreadPool.#ctor(System.Int32)">
+            <summary>
+            Creates a thread pool instance <see cref="T:MyThreadPool.MyThreadPool"/>
+            </summary>
+            <param name="n">Amount of threads in thread pool</param>
+        </member>
+        <member name="M:MyThreadPool.MyThreadPool.Shutdown">
+            <summary>
+            Shut down the thread pool. Already submitted tasks will be completed and new ones won't be submitted.
+            </summary>
+        </member>
+        <member name="M:MyThreadPool.MyThreadPool.Submit``1(System.Func{``0})">
+            <summary>
+            Add task to the queue. It will be started as soon as some thread
+            </summary>
+            <param name="func">Some function that has to be calculated</param>
+            <exception cref="T:System.OperationCanceledException">Thrown if thread pool has already been shut down</exception>
+        </member>
+        <member name="M:MyThreadPool.MyThreadPool.Dispose">
+            <summary>
+            Shut the thread pool down before it is garbage collected
+            </summary>
+        </member>
+    </members>
+</doc>

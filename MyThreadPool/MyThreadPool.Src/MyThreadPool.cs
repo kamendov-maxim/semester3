@@ -54,8 +54,8 @@ public class MyThreadPool : IDisposable
     }
 
     /// <summary>
-    /// Shut down the thread pool. Already submitted tasks will be completed and new ones won't be submitted
-    /// </summary
+    /// Shut down the thread pool. Already submitted tasks will be completed and new ones won't be submitted.
+    /// </summary>
     public void Shutdown()
     {
         if (_tokenSource.IsCancellationRequested)
