@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "SimpleFTP.Client\Client.csproj", "{8739A556-A961-47F2-A133-A2B332929701}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "SimpleFTP.Server\Server.csproj", "{7D22A10D-3F44-4E12-A83A-33928ACCB330}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleFTP.Tests", "SimpleFTP.Tests\SimpleFTP.Tests.csproj", "{B7FA5E16-3425-4687-84C5-08F2A8469850}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8739A556-A961-47F2-A133-A2B332929701}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8739A556-A961-47F2-A133-A2B332929701}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8739A556-A961-47F2-A133-A2B332929701}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8739A556-A961-47F2-A133-A2B332929701}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D22A10D-3F44-4E12-A83A-33928ACCB330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D22A10D-3F44-4E12-A83A-33928ACCB330}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D22A10D-3F44-4E12-A83A-33928ACCB330}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D22A10D-3F44-4E12-A83A-33928ACCB330}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7FA5E16-3425-4687-84C5-08F2A8469850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7FA5E16-3425-4687-84C5-08F2A8469850}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7FA5E16-3425-4687-84C5-08F2A8469850}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7FA5E16-3425-4687-84C5-08F2A8469850}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
