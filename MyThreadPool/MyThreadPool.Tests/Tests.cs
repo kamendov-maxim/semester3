@@ -89,7 +89,11 @@ public class Tests
     public void TestContinueWith()
     {
         var threadPool = new MyThreadPool(_n);
-        var task1 = threadPool.Submit(() => { Thread.Sleep(100); return 1; });
+        var task1 = threadPool.Submit(() =>
+        {
+            Thread.Sleep(100);
+            return 1;
+        });
         var task2 = task1.ContinueWith((int a) => a + 1);
         var task3 = task2
             .ContinueWith((a) => a + 1)
@@ -107,7 +111,11 @@ public class Tests
     public void TryingToGetResultBeforeItIsCalculated()
     {
         var threadPool = new MyThreadPool(_n);
-        var task = threadPool.Submit(() => { Thread.Sleep(20); return 5; });
+        var task = threadPool.Submit(() =>
+        {
+            Thread.Sleep(20);
+            return 5;
+        });
         Assert.That(task.Result, Is.EqualTo(5));
     }
 
@@ -119,8 +127,13 @@ public class Tests
         for (int i = 0; i < _n; i++)
         {
             int x = i;
-            tasks[i] = threadPool.Submit(() => { Thread.Sleep(10); return x + 1; });
+            tasks[i] = threadPool.Submit(() =>
+            {
+                Thread.Sleep(10);
+                return x + 1;
+            });
         }
+
         threadPool.Shutdown();
         for (int i = 0; i < _n; i++)
         {
@@ -144,13 +157,13 @@ public class Tests
         var list = new ConcurrentBag<IMyTask<int>>();
         var threads = new List<Thread>
         {
-            new(() => list.Add(threadPool.Submit(() => 1))),
-            new(() => list.Add(threadPool.Submit(() => 2))),
-            new(() => list.Add(threadPool.Submit(() => 2)
+            new (() => list.Add(threadPool.Submit(() => 1))),
+            new (() => list.Add(threadPool.Submit(() => 2))),
+            new (() => list.Add(threadPool.Submit(() => 2)
                     .ContinueWith((a) => a + 1))),
-            new(() => list.Add(threadPool.Submit(() => 2)
+            new (() => list.Add(threadPool.Submit(() => 2)
                     .ContinueWith((a) => a + 1)
-                    .ContinueWith((a) => a + 1)))
+                    .ContinueWith((a) => a + 1))),
         };
         threads.ForEach(t => t.Start());
         threads.ForEach(t => t.Join());
@@ -162,6 +175,7 @@ public class Tests
             var res = task.Result;
             result[i++] = task.Result;
         }
+
         Console.WriteLine();
         Array.Sort(result);
         Assert.That(result, Is.EqualTo(answer));

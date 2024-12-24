@@ -22,34 +22,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 namespace MyThreadPool;
+
 using System.Collections.Concurrent;
 
 /// <summary>
-/// ThreadPool implementation
+/// ThreadPool implementation.
 /// </summary>
 public class MyThreadPool : IDisposable
 {
     private readonly CancellationTokenSource _tokenSource;
     private readonly ConcurrentQueue<Action> _queue;
     private readonly AutoResetEvent _newTask;
-    private int _threadsFinished = 0;
-    private readonly AutoResetEvent _newThreadFinished = new(true);
+    private readonly AutoResetEvent _newThreadFinished = new (true);
     private readonly MyThread[] _threads;
+    private int _threadsFinished = 0;
 
     /// <summary>
-    /// Creates a thread pool instance <see cref="MyThreadPool"/>
+    /// Initializes a new instance of the <see cref="MyThreadPool"/> class.
     /// </summary>
-    /// <param name="n">Amount of threads in thread pool</param>
+    /// <param name="n">Amount of threads in thread pool.</param>
     public MyThreadPool(int n)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan(n, 100);
-        _tokenSource = new();
-        _newTask = new(false);
-        _queue = new();
+        _tokenSource = new ();
+        _newTask = new (false);
+        _queue = new ();
         _threads = new MyThread[n];
         for (int i = 0; i < n; i++)
         {
-            _threads[i] = new(this);
+            _threads[i] = new (this);
         }
     }
 
@@ -73,16 +74,19 @@ public class MyThreadPool : IDisposable
     }
 
     /// <summary>
-    /// Add task to the queue. It will be started as soon as some thread
+    /// Add task to the queue. It will be started as soon as some thread.
     /// </summary>
-    /// <param name="func">Some function that has to be calculated</param>
-    /// <exception cref="OperationCanceledException">Thrown if thread pool has already been shut down</exception>
+    /// <param name="func">Some function that has to be calculated.</param>
+    /// <exception cref="OperationCanceledException">Thrown if thread pool has already been shut down.</exception>
+    /// <typeparam name="TResult">Type of return result.</typeparam>
+    /// <returns>Result of function calculated in task.</returns>
     public IMyTask<TResult> Submit<TResult>(Func<TResult> func)
     {
         if (_tokenSource.IsCancellationRequested)
         {
             throw new OperationCanceledException("Thread pool has already been shut down");
         }
+
         var task = new MyTask<TResult>(this, func);
         _queue.Enqueue(task.Run);
         _newTask.Set();
@@ -90,7 +94,7 @@ public class MyThreadPool : IDisposable
     }
 
     /// <summary>
-    /// Shut the thread pool down before it is garbage collected
+    /// Shut the thread pool down before it is garbage collected.
     /// </summary>
     public void Dispose() => Shutdown();
 
@@ -98,14 +102,15 @@ public class MyThreadPool : IDisposable
     {
         private readonly MyThreadPool _threadPool;
         private readonly Thread _thread;
-        public void Join() => _thread.Join();
 
         public MyThread(MyThreadPool threadPool)
         {
             _threadPool = threadPool;
-            _thread = new(EventLoop);
+            _thread = new (EventLoop);
             _thread.Start();
         }
+
+        public void Join() => _thread.Join();
 
         public void EventLoop()
         {
@@ -117,12 +122,15 @@ public class MyThreadPool : IDisposable
                     task();
                     continue;
                 }
+
                 if (_threadPool._tokenSource.IsCancellationRequested)
                 {
                     break;
                 }
+
                 _threadPool._newTask.WaitOne();
             }
+
             Interlocked.Increment(ref _threadPool._threadsFinished);
             _threadPool._newThreadFinished.Set();
             _thread.Join();
@@ -131,13 +139,15 @@ public class MyThreadPool : IDisposable
 
     private class MyTask<TResult>(MyThreadPool threadPool, Func<TResult> func) : IMyTask<TResult>
     {
-        private readonly ManualResetEvent _completed = new(false);
-        public bool IsCompleted { get; private set; } = false;
-        private TResult? _result;
+        private readonly ManualResetEvent _completed = new (false);
+
         private readonly Func<TResult> _func = func ?? throw new ArgumentNullException(nameof(func));
         private readonly MyThreadPool _threadPool = threadPool;
-        private AggregateException? _exception;
         private readonly List<Action> _nextActions = [];
+        private TResult? _result;
+        private AggregateException? _exception;
+
+        public bool IsCompleted { get; private set; } = false;
 
         public TResult Result
         {
@@ -149,12 +159,15 @@ public class MyThreadPool : IDisposable
                     {
                         throw new OperationCanceledException("Task wasn't completed before the thread pool shut down");
                     }
+
                     _completed.WaitOne();
                 }
+
                 if (_exception != null)
                 {
                     throw _exception;
                 }
+
                 ArgumentNullException.ThrowIfNull(_result);
                 return _result;
             }
@@ -175,6 +188,7 @@ public class MyThreadPool : IDisposable
                 IsCompleted = true;
                 _completed.Set();
             }
+
             foreach (var item in _nextActions)
             {
                 _threadPool._queue.Enqueue(item);
@@ -193,6 +207,7 @@ public class MyThreadPool : IDisposable
             {
                 return _threadPool.Submit(() => func(Result));
             }
+
             var task = new MyTask<TNewResult>(_threadPool, () => func(Result));
             _nextActions.Add(task.Run);
             return task;

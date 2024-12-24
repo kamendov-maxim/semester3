@@ -24,27 +24,27 @@ SOFTWARE.
 namespace MyThreadPool;
 
 /// <summary>
-/// Interface that task should implement to be executed in MyThreadPool
+/// Interface that task should implement to be executed in MyThreadPool.
 /// </summary>
-/// <typeparam name="TResult">Type of the value that should be returned</typeparam>
+/// <typeparam name="TResult">Type of the value that should be returned.</typeparam>
 public interface IMyTask<TResult>
 {
     /// <summary>
-    /// Becomes true when task is completed.
+    /// Gets a value indicating whether task is completed.
     /// </summary>
     public bool IsCompleted { get; }
-    
+
     /// <summary>
-    /// After task completed result value is stored there. 
+    /// Gets the value calculated in task.
     /// If task is not completed, trying to get the value will cause block of the thread until value is calculated.
     /// </summary>
     public TResult Result { get; }
-   
+
     /// <summary>
     /// Add a task to execute after this task and use it's value.
     /// </summary>
-    /// <param name="func">Function that needs to be executed</param>
-    /// <typeparam name="TNewResult">Type of the return value of new task</typeparam>
-    /// <returns>New task</returns>
+    /// <param name="func">Function that needs to be executed.</param>
+    /// <typeparam name="TNewResult">Type of the return value of new task.</typeparam>
+    /// <returns>New task.</returns>
     public IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> func);
 }
