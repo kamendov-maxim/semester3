@@ -1,6 +1,5 @@
 namespace MyNUnit;
 
-
 /// <summary>
 /// Abstract record type to store MyNUnit test results
 /// </summary>

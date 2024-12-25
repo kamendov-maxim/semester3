@@ -1,56 +1,55 @@
+namespace MyNUnit;
+
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
-
 using MyNUnit.Assertions;
 using MyNUnit.Attributes;
 
-namespace MyNUnit;
-
 /// <summary>
-/// Class with methods to perform MyNUnit tests from some class 
+/// Class with methods to perform MyNUnit tests from some class.
 /// </summary>
 public class ClassTester
 {
-    /// <summary>
-    /// Type of class to test
-    /// </summary>
-    public Type ClassToTest;
+    private readonly object? _instance;
     private readonly ConcurrentBag<TestResult> _resultsList;
 
     /// <summary>
-    /// Methods called before any tests from the class
+    /// Gets methods called before any tests from the class.
     /// </summary>
-    public IEnumerable<MethodInfo?> BeforeClassMethods;
+    public IEnumerable<MethodInfo?> BeforeClassMethods { get; }
 
     /// <summary>
-    /// Methods called after all tests from the class
+    /// Gets methods called after all tests from the class.
     /// </summary>
-    public IEnumerable<MethodInfo?> AfterClassMethods;
+    public IEnumerable<MethodInfo?> AfterClassMethods { get; }
 
     /// <summary>
-    /// Methods called before performing any test
+    /// Gets methods called before performing any test.
     /// </summary>
-    public IEnumerable<MethodInfo?> BeforeTestMethods;
+    public IEnumerable<MethodInfo?> BeforeTestMethods { get; }
 
     /// <summary>
-    /// Methods called after performing any test
+    /// Gets methods called after performing any test.
     /// </summary>
-    public IEnumerable<MethodInfo?> AfterTestMethods;
+    public IEnumerable<MethodInfo?> AfterTestMethods { get; }
 
     /// <summary>
-    /// Tests from class
+    /// Gets tests from class.
     /// </summary>
-    public IEnumerable<MethodInfo?> TestMethods;
-    private readonly object? _instance;
+    public IEnumerable<MethodInfo?> TestMethods { get; }
 
     /// <summary>
-    /// Constructor of class
+    /// Gets the type of class to test.
     /// </summary>
-    /// <param name="classToTest">Type of class to test</param>
-    /// <param name="resultsList">List where to store results
-    /// ConcurrentBag is used in case if tests will be performed in parallel</param>
-    /// <returns></returns>
+    public Type ClassToTest { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ClassTester"/> class.
+    /// </summary>
+    /// <param name="classToTest">Type of class to test.</param>
+    /// <param name="resultsList">List where to store results.
+    /// ConcurrentBag is used in case if tests will be performed in parallel.</param>
     public ClassTester(Type? classToTest, ConcurrentBag<TestResult> resultsList)
     {
         ArgumentNullException.ThrowIfNull(classToTest, "Test class type is null");
@@ -74,9 +73,9 @@ public class ClassTester
     }
 
     /// <summary>
-    /// Run tests
+    /// Run tests.
     /// </summary>
-    /// <returns>Task in which tests are running</returns>
+    /// <returns>Task in which tests are running.</returns>
     public Task Run()
     {
         return ClassToTest.IsDefined(typeof(ParallelTesting)) ? RunParallel() : RunSequential();
@@ -86,7 +85,7 @@ public class ClassTester
     {
         return Task.Run(() =>
         {
-            Stopwatch st = new();
+            Stopwatch st = new ();
 
             foreach (var method in TestMethods)
             {
@@ -112,28 +111,34 @@ public class ClassTester
                     var ret = method.Invoke(_instance, null);
                 }
                 catch (TargetInvocationException ex)
-                // catch (FailedAssertException ex)
                 {
                     st.Stop();
                     if (ex.InnerException == null)
                     {
                         throw new ArgumentNullException();
                     }
+
                     testResult = ex.InnerException.GetType() == typeof(FailedAssertException)
                         ? new FailedTestResult(method.Name, st.ElapsedMilliseconds, ex.InnerException.Message)
                         : new FinishedWithExceptionResult(method.Name, ex.InnerException, st.ElapsedMilliseconds);
                 }
-                if (testResult == null) { testResult = new SuccessfulTestResult(method.Name, st.ElapsedMilliseconds); }
+
+                if (testResult == null)
+                {
+                    testResult = new SuccessfulTestResult(method.Name, st.ElapsedMilliseconds);
+                }
+
                 _resultsList.Add(testResult);
                 RunTestsInArray(AfterTestMethods);
             }
+
             RunTestsInArray(AfterClassMethods);
         });
     }
 
     private Task RunParallel()
     {
-        Stopwatch st = new();
+        Stopwatch st = new ();
         var tasks = new List<Task>();
         RunTestsInArrayParallel(BeforeClassMethods);
         return Task.Run(() => Parallel.ForEach(TestMethods, method =>
@@ -153,7 +158,6 @@ public class ClassTester
                         }
                         else
                         {
-
                             st.Start();
                             try
                             {
@@ -166,15 +170,20 @@ public class ClassTester
                                 {
                                     throw new ArgumentNullException();
                                 }
+
                                 testResult = ex.InnerException.GetType() == typeof(FailedAssertException)
                                     ? new FailedTestResult(method.Name, st.ElapsedMilliseconds, ex.InnerException.Message)
                                     : new FinishedWithExceptionResult(method.Name, ex.InnerException, st.ElapsedMilliseconds);
                             }
-                            if (testResult == null) { testResult = new SuccessfulTestResult(method.Name, st.ElapsedMilliseconds); }
+
+                            if (testResult == null)
+                            {
+                                testResult = new SuccessfulTestResult(method.Name, st.ElapsedMilliseconds);
+                            }
+
                             _resultsList.Add(testResult);
                             RunTestsInArrayParallel(AfterTestMethods);
                         }
-
                     })).ContinueWith(t => RunTestsInArrayParallel(AfterClassMethods));
     }
 
