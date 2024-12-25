@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyThreadPool", "MyThreadPool.Src\MyThreadPool.csproj", "{8C65141A-7519-4E3B-8A63-C5178FA428E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyThreadPool.Tests", "MyThreadPool.Tests\MyThreadPool.Tests.csproj", "{BEF0E197-C22B-4B97-8301-1CE6F9F9CEE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8C65141A-7519-4E3B-8A63-C5178FA428E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C65141A-7519-4E3B-8A63-C5178FA428E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C65141A-7519-4E3B-8A63-C5178FA428E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C65141A-7519-4E3B-8A63-C5178FA428E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEF0E197-C22B-4B97-8301-1CE6F9F9CEE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEF0E197-C22B-4B97-8301-1CE6F9F9CEE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEF0E197-C22B-4B97-8301-1CE6F9F9CEE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEF0E197-C22B-4B97-8301-1CE6F9F9CEE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
