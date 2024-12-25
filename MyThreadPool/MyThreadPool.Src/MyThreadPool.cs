@@ -43,7 +43,7 @@ public class MyThreadPool : IDisposable
     /// <param name="n">Amount of threads in thread pool.</param>
     public MyThreadPool(int n)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(n, 100);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(n);
         _tokenSource = new ();
         _newTask = new (false);
         _queue = new ();
@@ -119,11 +119,15 @@ public class MyThreadPool : IDisposable
             {
                 if (_threadPool._queue.TryDequeue(out var task))
                 {
+                    if (!_threadPool._queue.IsEmpty)
+                    {
+                        _threadPool._newTask.Set();
+                    }
+
                     task();
                     continue;
                 }
-
-                if (_threadPool._tokenSource.IsCancellationRequested)
+                else if (_threadPool._tokenSource.IsCancellationRequested && _threadPool._queue.IsEmpty)
                 {
                     break;
                 }
@@ -140,10 +144,10 @@ public class MyThreadPool : IDisposable
     private class MyTask<TResult>(MyThreadPool threadPool, Func<TResult> func) : IMyTask<TResult>
     {
         private readonly ManualResetEvent _completed = new (false);
-
-        private readonly Func<TResult> _func = func ?? throw new ArgumentNullException(nameof(func));
         private readonly MyThreadPool _threadPool = threadPool;
         private readonly List<Action> _nextActions = [];
+
+        private Func<TResult>? _func = func ?? throw new ArgumentNullException(nameof(func));
         private TResult? _result;
         private AggregateException? _exception;
 
@@ -177,7 +181,7 @@ public class MyThreadPool : IDisposable
         {
             try
             {
-                _result = _func();
+                _result = _func!();
             }
             catch (Exception ex)
             {
@@ -185,14 +189,18 @@ public class MyThreadPool : IDisposable
             }
             finally
             {
+                _func = null;
                 IsCompleted = true;
                 _completed.Set();
             }
 
             foreach (var item in _nextActions)
             {
-                _threadPool._queue.Enqueue(item);
-                _threadPool._newTask.Set();
+                if (!_threadPool._tokenSource.IsCancellationRequested)
+                {
+                    _threadPool._queue.Enqueue(item);
+                    _threadPool._newTask.Set();
+                }
             }
         }
 
@@ -210,7 +218,9 @@ public class MyThreadPool : IDisposable
 
             var task = new MyTask<TNewResult>(_threadPool, () => func(Result));
             _nextActions.Add(task.Run);
-            return task;
+            return _threadPool._tokenSource.IsCancellationRequested
+                ? throw new OperationCanceledException("Thread pool has already been shut down")
+                : task;
         }
     }
 }

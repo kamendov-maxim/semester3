@@ -123,8 +123,8 @@ public class Tests
     public void ShutdownTest()
     {
         var threadPool = new MyThreadPool(_n);
-        var tasks = new IMyTask<int>[_n];
-        for (int i = 0; i < _n; i++)
+        var tasks = new IMyTask<int>[_n * 2];
+        for (int i = 0; i < _n * 2; i++)
         {
             int x = i;
             tasks[i] = threadPool.Submit(() =>
@@ -148,6 +148,16 @@ public class Tests
         threadPool.Shutdown();
         Assert.Throws<OperationCanceledException>(() =>
                 threadPool.Submit(() => 0));
+    }
+
+    [Test]
+    public void ContinueWithAfterShutDownThrowsException()
+    {
+        var threadPool = new MyThreadPool(_n);
+        var task = threadPool.Submit(() => 1);
+        threadPool.Shutdown();
+        Assert.Throws<OperationCanceledException>(() =>
+                task.ContinueWith((x) => x + 1));
     }
 
     [Test]
